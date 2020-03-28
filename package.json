@@ -1,0 +1,29 @@
+{
+  "name": "deployment-barebones",
+  "version": "0.1.0",
+  "description": "Barebones server for deploying multiplatform packages",
+  "main": "src/app.js",
+  "repository": "git@github.com:walmat/deployment-barebones.git",
+  "author": "Matthew Wall <matthew.wallt@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "nodemon --config ./.nodemonrc src/app.js",
+    "prod": "cross-env NODE_ENV=production node src/app.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.11.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "nodemon": "^1.18.9",
+    "prettier": "^1.15.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-useragent": "^1.0.12"
+  }
+}
