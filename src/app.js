@@ -1,18 +1,27 @@
 const express = require('express');
+const AWS = require('aws-sdk');
 const expressUserAgent = require('express-useragent');
 const cors = require('cors');
 const path = require('path');
 
 const PORT = process.env.PORT || 9080;
-const DEPLOY_DIR = process.env.DEPLOY_DIR;
 const DEPLOY_NAME = process.env.DEPLOY_NAME;
 
 const app = express();
 
 const paths = {};
 [{ key: 'mac', ext: 'dmg' }, { key: 'win', ext: 'exe' }].forEach(({ key, ext }) => {
-  paths[key] = path.resolve(DEPLOY_DIR, `${DEPLOY_NAME}.${ext}`);
+  paths[key] = `${DEPLOY_NAME}.${ext}`;
 });
+
+AWS.config.update({
+  accessKeyId: process.env.ACCESS_KEY,
+  secretAccessKey: process.env.SECRET_KEY,
+  region: process.env.BUCKET_REGION,
+});
+
+//Creating a new instance of S3:
+const s3 = new AWS.S3();
 
 app.use(cors());
 app.use(expressUserAgent.express());
@@ -28,26 +37,18 @@ app.get('/', (req, res) => {
   let filePath = null;
   switch (platform) {
     case 'Microsoft Windows': {
-      filePath = paths.win;
-      break;
+      return retrieveFile(paths.win, res);
     }
     case 'Apple Mac': {
-      filePath = paths.mac;
-      break;
+      return retrieveFile(paths.mac, res);
     }
     default: {
-      break;
+      return res
+        .status(404)
+        .send(
+          `Your current platform (${platform}) is unsupported at this time! Please contact devs about adding support`,
+        );
     }
-  }
-
-  if (filePath) {
-    res.status(200);
-    res.download(filePath);
-  } else {
-    res.status(404);
-    res.send(
-      `Your current platform (${platform}) is unsupported at this time! Please contact devs about adding support`,
-    );
   }
 });
 
@@ -56,3 +57,18 @@ app.server.listen(PORT, () => {
 
   app.on('shutdown', () => process.exit(0));
 });
+
+function retrieveFile(filename, res) {
+  const getParams = {
+    Bucket: process.env.BUCKET_NAME,
+    Key: filename,
+  };
+
+  s3.getObject(getParams, function(err, data) {
+    if (err) {
+      return res.status(400).send({ success: false, err: err });
+    } else {
+      return res.send(data.Body);
+    }
+  });
+}
