@@ -25,6 +25,8 @@
     "aws-sdk": "^2.648.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "express-useragent": "^1.0.12"
+    "express-useragent": "^1.0.12",
+    "http": "^0.0.1-security",
+    "morgan": "^1.10.0"
   }
 }

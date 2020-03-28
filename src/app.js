@@ -26,7 +26,7 @@ AWS.config.update({
 //Creating a new instance of S3:
 const s3 = new AWS.S3();
 
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 app.use(cors());
 app.use(expressUserAgent.express());
 
