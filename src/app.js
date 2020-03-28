@@ -1,5 +1,4 @@
 const express = require('express');
-const http = require('http');
 const AWS = require('aws-sdk');
 const expressUserAgent = require('express-useragent');
 
@@ -7,7 +6,6 @@ const PORT = process.env.PORT || 9080;
 const DEPLOY_NAME = process.env.DEPLOY_NAME;
 
 const app = express();
-app.server = http.createServer(app);
 
 app.use(expressUserAgent.express());
 
@@ -64,6 +62,8 @@ function retrieveFile(filename, res) {
     Bucket: 'omega-autoupdater',
     Key: filename,
   };
+
+  console.log('[DEBUG]: Retrieving file: ', getParams.Key);
 
   s3.getObject(getParams, function(err, data) {
     if (err) {
