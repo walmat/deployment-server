@@ -1,4 +1,6 @@
 const express = require('express');
+const morgan = require('morgan');
+const http = require('http');
 const AWS = require('aws-sdk');
 const expressUserAgent = require('express-useragent');
 const cors = require('cors');
@@ -8,6 +10,7 @@ const PORT = process.env.PORT || 9080;
 const DEPLOY_NAME = process.env.DEPLOY_NAME;
 
 const app = express();
+app.server = http.createServer(app);
 
 const paths = {};
 [{ key: 'mac', ext: 'dmg' }, { key: 'win', ext: 'exe' }].forEach(({ key, ext }) => {
@@ -23,6 +26,7 @@ AWS.config.update({
 //Creating a new instance of S3:
 const s3 = new AWS.S3();
 
+app.use(morgan('dev'))
 app.use(cors());
 app.use(expressUserAgent.express());
 
