@@ -75,7 +75,7 @@ function retrieveFile(filename, res) {
       return res.status(404).send(`Unable to retrieve file! Please contact devs regarding this`);
     } else {
       console.log(data);
-      return res.send(data.Body);
+      return res.send(data.Body.toString('utf-8'));
     }
   });
 }
