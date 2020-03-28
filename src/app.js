@@ -68,10 +68,13 @@ function retrieveFile(filename, res) {
     Key: filename,
   };
 
+  console.log(getParams);
+
   s3.getObject(getParams, function(err, data) {
     if (err) {
-      return res.status(400).send({ success: false, err: err });
+      return res.status(404).send(`Unable to retrieve file! Please contact devs regarding this`);
     } else {
+      console.log(data);
       return res.send(data.Body);
     }
   });
