@@ -37,9 +37,11 @@ app.get('/', (req, res) => {
   switch (platform) {
     case 'Microsoft Windows': {
       retrieveFile(paths.win, res);
+      break;
     }
     case 'Apple Mac': {
       retrieveFile(paths.mac, res);
+      break;
     }
     default: {
       return res
