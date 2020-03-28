@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
 });
 
 //listening to server 3000
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log('Server running on port 3000');
 });
 
