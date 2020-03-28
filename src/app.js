@@ -65,11 +65,13 @@ function retrieveFile(filename, res) {
 
   console.log('[DEBUG]: Retrieving file: ', getParams.Key);
 
-  s3.getObject(getParams, function(err, data) {
+  s3.getObject(getParams, { stream: true }, function(err, data) {
     if (err) {
       return res.status(400).send({ success: false, err: err });
     } else {
-      return res.send(data.Body);
+      res.attachment(filename);
+      data.Stream.pipe(res);
+      // return res.send(data.Body);
     }
   });
 }
