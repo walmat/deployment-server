@@ -5,28 +5,24 @@ const expressUserAgent = require('express-useragent');
 const PORT = process.env.PORT || 9080;
 const DEPLOY_NAME = process.env.DEPLOY_NAME;
 
+const s3 = new AWS.S3();
 const app = express();
-
 app.use(expressUserAgent.express());
 
 const paths = {};
-[{ key: 'mac', ext: 'dmg' }, { key: 'win', ext: 'exe' }].forEach(({ key, ext }) => {
+[
+  { key: 'mac', ext: 'dmg' },
+  { key: 'win', ext: 'exe' },
+].forEach(({ key, ext }) => {
   paths[key] = `${DEPLOY_NAME}.${ext}`;
 });
 
-//setting the credentials
-//The region should be the region of the bucket that you created
-//Visit this if you have any confusion - https://docs.aws.amazon.com/general/latest/gr/rande.html
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY,
   secretAccessKey: process.env.SECRET_KEY,
-  region: 'us-east-1',
+  region: process.env.BUCKET_REGION,
 });
 
-//Creating a new instance of S3:
-const s3 = new AWS.S3();
-
-//GET method route for downloading/retrieving file
 app.get('/', (req, res) => {
   const {
     useragent: { platform },
@@ -51,27 +47,19 @@ app.get('/', (req, res) => {
   }
 });
 
-//listening to server 3000
 app.listen(PORT, () => {
-  console.log('Server running on port 3000');
+  console.log('Server running on port: ', PORT);
 });
 
-//The retrieveFile function
 function retrieveFile(filename, res) {
   const getParams = {
-    Bucket: 'omega-autoupdater',
+    Bucket: process.env.BUCKET_NAME,
     Key: filename,
   };
 
   console.log('[DEBUG]: Retrieving file: ', getParams.Key);
-
-  s3.getObject(getParams, { stream: true }, function(err, data) {
-    if (err) {
-      return res.status(400).send({ success: false, err: err });
-    } else {
-      res.attachment(filename);
-      data.Stream.pipe(res);
-      // return res.send(data.Body);
-    }
-  });
+  res.attachment(filename);
+  s3.getObject(s3Params)
+    .createReadStream()
+    .pipe(res);
 }
