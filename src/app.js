@@ -59,7 +59,7 @@ function retrieveFile(filename, res) {
 
   console.log('[DEBUG]: Retrieving file: ', getParams.Key);
   res.attachment(filename);
-  s3.getObject(s3Params)
+  s3.getObject(getParams)
     .createReadStream()
     .pipe(res);
 }
