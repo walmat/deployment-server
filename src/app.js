@@ -5,7 +5,6 @@ const expressUserAgent = require('express-useragent');
 const PORT = process.env.PORT || 9080;
 const DEPLOY_NAME = process.env.DEPLOY_NAME;
 
-const s3 = new AWS.S3();
 const app = express();
 app.use(expressUserAgent.express());
 
@@ -22,6 +21,7 @@ AWS.config.update({
   secretAccessKey: process.env.SECRET_KEY,
   region: process.env.BUCKET_REGION,
 });
+const s3 = new AWS.S3();
 
 app.get('/', (req, res) => {
   const {
@@ -58,8 +58,14 @@ function retrieveFile(filename, res) {
   };
 
   console.log('[DEBUG]: Retrieving file: ', getParams.Key);
-  res.attachment(filename);
-  s3.getObject(getParams)
-    .createReadStream()
-    .pipe(res);
+  try {
+    res.attachment(filename);
+    s3.getObject(getParams)
+      .createReadStream()
+      .pipe(res);
+  } catch (error) {
+    return res
+      .status(404)
+      .send(`Unable to load deliverable file! Please contact devs about this error`);
+  }
 }
