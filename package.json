@@ -22,7 +22,7 @@
     "prettier": "^1.15.3"
   },
   "dependencies": {
-    "aws-sdk": "^2.648.0",
+    "aws-sdk": "^2.814.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-useragent": "^1.0.12",
